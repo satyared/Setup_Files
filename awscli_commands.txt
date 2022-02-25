@@ -1,5 +1,14 @@
 Launch one AWS instance with aws command tools
 
+yum install python3
+curl -O https://bootstrap.pypa.io/get-pip.py
+python3 get-pip.py --user
+ls -a ~
+export PATH=~/.local/bin:$PATH
+source ~/.bash_profile
+pip3 --version
+pip3 install awscli --upgrade --user
+
 
 9:$ aws configure
 AWS Access Key ID [None]: AKIAIOSFODNN7EXAMPLE
