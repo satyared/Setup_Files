@@ -12,7 +12,7 @@ pip3 install awscli --upgrade --user
 Installation in ubuntu
 
 apt update 
-apt install aws cli
+apt install awscli
 
 9:$ aws configure
 AWS Access Key ID [None]: AKIAIOSFODNN7EXAMPLE
