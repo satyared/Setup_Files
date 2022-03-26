@@ -71,15 +71,15 @@ aws ec2 describe-images --owners self amazon --filters "Name=root-device-type,Va
 
 10. launch the instance
 
-aws ec2 run-instances --image-id ami-26ebbc5c --count 1 --instance-type t2.micro --key-name aws --security-group-ids sg-be76b5c8 --subnet-id subnet-79260356
+aws ec2 run-instances --image-id ami-04505e74c0741db8d --count 1 --instance-type t2.micro --key-name terraform --security-group-ids sg-0f3b68f97f91509d1 --subnet-id subnet-0ac4be71aa723b6f6
 
 11:terminate the instalnce 
 
-aws ec2 terminate-instances --instance-ids i-5203422c
+aws ec2 terminate-instances --instance-ids i-0946fb27b2ad5545c
 
 12:how to find out instance id
 
-aws ec2 describe-instances --instance-ids
+ aws ec2 describe-instances --instance-ids i-0aeda77a7aa41091f
 
 13:creat a bucket 
 
