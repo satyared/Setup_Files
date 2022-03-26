@@ -1,4 +1,4 @@
-AWS CLI installation:
+AWS CLI installation in centos/ amazon:
 
 yum install python3
 curl -O https://bootstrap.pypa.io/get-pip.py
@@ -9,6 +9,10 @@ source ~/.bash_profile
 pip3 --version
 pip3 install awscli --upgrade --user
 
+Installation in ubuntu
+
+apt update 
+apt install aws cli
 
 9:$ aws configure
 AWS Access Key ID [None]: AKIAIOSFODNN7EXAMPLE
