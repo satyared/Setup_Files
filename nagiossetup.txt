@@ -1,0 +1,193 @@
+Nagios master side:
+
+sudo apt update
+sudo apt install -y autoconf bc gawk dc build-essential gcc libc6 make wget unzip apache2 php libapache2-mod-php libgd-dev libmcrypt-dev make libssl-dev snmp libnet-snmp-perl gettext
+wget https://assets.nagios.com/downloads/nagioscore/releases/nagios-4.4.6.tar.gz
+
+tar -xf nagios-4.4.6.tar.gz
+cd nagioscore-*/
+cd ~/
+wget https://github.com/NagiosEnterprises/nagioscore/archive/nagios-4.4.6.tar.gz
+cd nagioscore-*/
+tar -xf nagios-4.4.6.tar.gz
+cd nagioscore-*/
+sudo ./configure --with-httpd-conf=/etc/apache2/sites-enabled
+sudo make all
+sudo make install-groups-users
+sudo usermod -a -G nagios www-data
+sudo make install
+sudo make install-daemoninit
+sudo make install-commandmode
+sudo make install-config
+sudo make install-webconf
+sudo a2enmod rewrite cgi
+systemctl restart apache2
+sudo htpasswd -c /usr/local/nagios/etc/htpasswd.users nagiosadmin
+
+for svc in Apache ssh
+do
+ufw allow $svc
+done
+
+ufw enable
+ufw status numbered
+sudo apt install monitoring-plugins nagios-nrpe-plugin
+cd /usr/local/nagios/etc
+mkdir -p /usr/local/nagios/etc/servers
+
+vi nagios.cfg
+Uncomment the 'cfg_dir' option that will be used for sotring all server hots configurations.
+cfg_dir=/usr/local/nagios/etc/servers
+
+vi resource.cfg
+Define the Nagios Monitoring Plugins path by changing the default configuration as below.
+$USER1$=/usr/lib/nagios/plugins
+
+vi objects/commands.cfg
+$USER1$=/usr/lib/nagios/plugins
+
+
+systemctl start nagios
+systemctl enable nagios
+systemctl status nagios
+systemctl restart apache2
+
+http://18.220.113.208/nagios/
+
+Adding another host : Master side:
+
+cd /usr/local/nagios/etc
+vi servers/client01.cfg
+
+define host {
+        use                          linux-server
+        host_name                    client01
+        alias                        Ubuntu Host
+        address                      172.31.13.86
+        register                     1
+}
+
+define service {
+      host_name                       client01
+      service_description             PING
+      check_command                   check_nrpe!check_ping
+      max_check_attempts              2
+      check_interval                  2
+      retry_interval                  2
+      check_period                    24x7
+      check_freshness                 1
+      contact_groups                  admins
+      notification_interval           2
+      notification_period             24x7
+      notifications_enabled           1
+      register                        1
+}
+
+define service {
+      host_name                       client01
+      service_description             Check Users
+      check_command                   check_nrpe!check_users
+      max_check_attempts              2
+      check_interval                  2
+      retry_interval                  2
+      check_period                    24x7
+      check_freshness                 1
+      contact_groups                  admins
+      notification_interval           2
+      notification_period             24x7
+      notifications_enabled           1
+      register                        1
+}
+
+define service {
+      host_name                       client01
+      service_description             Check SSH
+      check_command                   check_nrpe!check_ssh
+      max_check_attempts              2
+      check_interval                  2
+      retry_interval                  2
+      check_period                    24x7
+      check_freshness                 1
+      contact_groups                  admins
+      notification_interval           2
+      notification_period             24x7
+      notifications_enabled           1
+      register                        1
+}
+
+define service {
+      host_name                       client01
+      service_description             Check Root / Disk
+      check_command                   check_nrpe!check_root
+      max_check_attempts              2
+      check_interval                  2
+      retry_interval                  2
+      check_period                    24x7
+      check_freshness                 1
+      contact_groups                  admins
+      notification_interval           2
+      notification_period             24x7
+      notifications_enabled           1
+      register                        1
+}
+
+define service {
+      host_name                       client01
+      service_description             Check APT Update
+      check_command                   check_nrpe!check_apt
+      max_check_attempts              2
+      check_interval                  2
+      retry_interval                  2
+      check_period                    24x7
+      check_freshness                 1
+      contact_groups                  admins
+      notification_interval           2
+      notification_period             24x7
+      notifications_enabled           1
+      register                        1
+}
+
+define service {
+      host_name                       client01
+      service_description             Check HTTP
+      check_command                   check_nrpe!check_http
+      max_check_attempts              2
+      check_interval                  2
+      retry_interval                  2
+      check_period                    24x7
+      check_freshness                 1
+      contact_groups                  admins
+      notification_interval           2
+      notification_period             24x7
+      notifications_enabled           1
+      register                        1
+}
+
+systemctl restart nagios
+
+
+
+Agent side:   Add Linux Host to Monitor:
+sudo apt update
+sudo apt install nagios-nrpe-server monitoring-plugins
+cd /etc/nagios/
+vi nrpe_local.cfg
+command[check_root]=/usr/lib/nagios/plugins/check_disk -w 20% -c 10% -p /
+command[check_ping]=/usr/lib/nagios/plugins/check_ping -H agentip -w 100.0,20% -c 500.0,60% -p 5
+command[check_ssh]=/usr/lib/nagios/plugins/check_ssh -4 agentip
+command[check_http]=/usr/lib/nagios/plugins/check_http -I agentip
+command[check_apt]=/usr/lib/nagios/plugins/check_apt
+
+vi nrpe.cfg
+Uncomment the "server_address" line and change the value with the "client01" IP address.
+server_address=agentip
+One the "allowed_hosts" line, add the Nagios Server IP address "172.16.0.5".
+allowed_hosts=127.0.0.1,::1,MasterIP
+
+systemctl restart nagios-nrpe-server
+systemctl enable nagios-nrpe-server
+systemctl status nagios-nrpe-server
+
+sudo apt install monitoring-plugins nagios-nrpe-plugin
+hostname client01
+change hostname in /etc/hostname
