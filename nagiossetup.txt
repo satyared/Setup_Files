@@ -27,7 +27,7 @@ done
 
 ufw enable
 ufw status numbered
-sudo apt install monitoring-plugins nagios-nrpe-plugin
+sudo apt install monitoring-plugins nagios-nrpe-plugin -y
 cd /usr/local/nagios/etc
 mkdir -p /usr/local/nagios/etc/servers
 
