@@ -165,7 +165,7 @@ systemctl restart nagios
 
 Agent side:   Add Linux Host to Monitor:
 sudo apt update
-sudo apt install nagios-nrpe-server monitoring-plugins
+sudo apt install nagios-nrpe-server monitoring-plugins -y
 cd /etc/nagios/
 vi nrpe_local.cfg
 command[check_root]=/usr/lib/nagios/plugins/check_disk -w 20% -c 10% -p /
