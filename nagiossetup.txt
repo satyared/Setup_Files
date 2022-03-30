@@ -35,6 +35,10 @@ service nagios start
 service httpd restart
 hostname nagiosmaster
 
+vi /usr/local/nagios/etc/nagios.cfg
+uncomment below line
+cfg_dir=/usr/local/nagios/etc/servers
+
 cd /usr/local/nagios/etc/
 
 mkdir servers
