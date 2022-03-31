@@ -4,11 +4,11 @@ Kubernetes Setup Using Kubeadm In AWS EC2 Ubuntu Servers Container-D As Runtime
 Prerequisite:
 =============
 
-3 - Ubuntu Serves
+2 - Ubuntu Serves
 
-1 - Manager  (4GB RAM , 2 Core) t2.medium
+1 - Master  (4GB RAM , 2 Core) t2.medium
 
-2 - Workers  (1 GB, 1 Core)     t2.micro
+1 - Worker  (1 GB, 1 Core)     t2.micro
 
 
 Note: Open Required Ports In AWS Security Groups. For now we will open All trafic.
