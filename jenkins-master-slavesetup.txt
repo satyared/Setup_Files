@@ -1,0 +1,30 @@
+Create two servers amazon linux
+
+Master side:
+# Installing Jenkins
+sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo
+sudo rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+sudo yum -y install jenkins -y
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+
+sudo -i su -c "ssh-keygen -t rsa -f /root/.ssh/id_rsa -q -N \"\"" -m "root"
+sudo -i su -c "ssh-keygen -b 2048 -t rsa -f /var/lib/jenkins/.ssh/id_rsa -q -N \"\"" -m "jenkins"
+sudo sh -c "echo \"jenkins ALL=(ALL)       NOPASSWD:ALL\" >> /etc/sudoers"
+sudo sed -i "/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" /etc/ssh/sshd_config
+sudo service sshd restart
+
+mkdir /home/jenkins
+
+sudo chmod -R 777 /home/jenkins
+
+#  slave config:
+useradd jenkins
+passwd jenkins
+yum install java-1.8.0-openjdk -y 
+sudo -i su -c "ssh-keygen -t rsa -f /root/.ssh/id_rsa -q -N \"\"" -m "root"
+sudo -i su -c "ssh-keygen -b 2048 -t rsa -f /var/lib/jenkins/.ssh/id_rsa -q -N \"\"" -m "jenkins"
+sudo sh -c "echo \"jenkins ALL=(ALL)       NOPASSWD:ALL\" >> /etc/sudoers"
+sudo sed -i "/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" /etc/ssh/sshd_config
+sudo service sshd restart
