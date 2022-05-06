@@ -11,8 +11,8 @@ pip3 install awscli --upgrade --user
 
 Installation in ubuntu
 
-apt update 
-apt install awscli
+sudo apt update 
+sudo apt install awscli -y
 
 9:$ aws configure
 AWS Access Key ID [None]: AKIAIOSFODNN7EXAMPLE
@@ -39,12 +39,14 @@ aws ec2 delete-key-pair --key-name vijay
 
 3. how to see what are the VPC id's are available
 
+Virtual Private Cloud
+
 aws ec2 describe-vpcs
 
 
 4. create security group attached to default VPC network
 
-aws ec2 create-security-group --group-name vijay-ext --description "vijay-ext" --vpc-id vpc-69359312
+aws ec2 create-security-group --group-name vijay-ext --description "vijay-ext" --vpc-id vpc-0c593d3051801d1f3
 
 
 5.list security groups
@@ -54,7 +56,7 @@ aws ec2 describe-security-groups
 
 6. Delete security group
 
-aws ec2 delete-security-group --group-id sg-dcef10aa
+aws ec2 delete-security-group --group-id sg-0bc338d6663c85ef8
 
 
 7. how to allow ssh traffic to all ip 
@@ -79,7 +81,9 @@ aws ec2 run-instances --image-id ami-04505e74c0741db8d --count 1 --instance-type
 
 11:terminate the instalnce 
 
-aws ec2 terminate-instances --instance-ids i-0946fb27b2ad5545c
+aws ec2 start-instances --instance-ids i-0d9d077670263bf6a
+aws ec2 stop-instances --instance-ids i-0d9d077670263bf6a
+aws ec2 terminate-instances --instance-ids i-0d9d077670263bf6a
 
 12:how to find out instance id
 
