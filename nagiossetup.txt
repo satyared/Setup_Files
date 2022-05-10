@@ -43,7 +43,7 @@ systemctl enable nagios
 systemctl status nagios
 systemctl restart apache2
 
-http://18.220.113.208/nagios/
+http://masterip/nagios/
 
 Adding another host : Master side:
 
@@ -54,7 +54,7 @@ define host {
         use                          linux-server
         host_name                    client01
         alias                        Ubuntu Host
-        address                      172.31.13.86
+        address                      agentip
         register                     1
 }
 
@@ -162,16 +162,16 @@ sudo apt install nagios-nrpe-server monitoring-plugins
 cd /etc/nagios/
 vi nrpe_local.cfg
 command[check_root]=/usr/lib/nagios/plugins/check_disk -w 20% -c 10% -p /
-command[check_ping]=/usr/lib/nagios/plugins/check_ping -H agentip -w 100.0,20% -c 500.0,60% -p 5
-command[check_ssh]=/usr/lib/nagios/plugins/check_ssh -4 agentip
-command[check_http]=/usr/lib/nagios/plugins/check_http -I agentip
+command[check_ping]=/usr/lib/nagios/plugins/check_ping -H agentPrivateip -w 100.0,20% -c 500.0,60% -p 5
+command[check_ssh]=/usr/lib/nagios/plugins/check_ssh -4 agentPrivateip
+command[check_http]=/usr/lib/nagios/plugins/check_http -I agentPrivateip
 command[check_apt]=/usr/lib/nagios/plugins/check_apt
 
 vi nrpe.cfg
 Uncomment the "server_address" line and change the value with the "client01" IP address.
-server_address=agentip
-One the "allowed_hosts" line, add the Nagios Server IP address "172.16.0.5".
-allowed_hosts=127.0.0.1,::1,MasterIP
+server_address=agentPrivateip
+One the "allowed_hosts" line, add the Nagios Server IP address "MasterIP".
+allowed_hosts=127.0.0.1,::1,MasterPrivateIP
 
 systemctl restart nagios-nrpe-server
 systemctl enable nagios-nrpe-server
