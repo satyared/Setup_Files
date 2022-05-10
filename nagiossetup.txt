@@ -1,145 +1,193 @@
 Nagios master side:
-yum install httpd php -y
-yum install gcc glibc glibc-common -y
-yum install gd gd-devel -y
-adduser -m nagios
-passwd nagios
-groupadd nagioscmd
-usermod -a -G nagioscmd nagios
-usermod -a -G nagioscmd apache
-mkdir ~/downloads
-cd ~/downloads
-wget https://webwerks.dl.sourceforge.net/project/nagios/nagios-4.x/nagios-4.0.8/nagios-4.0.8.tar.gz
-wget http://nagios-plugins.org/download/nagios-plugins-2.0.3.tar.gz
-tar zxvf nagios-4.0.8.tar.gz
-cd nagios-4.0.8
-./configure --with-command-group=nagioscmd
-make all
-make install
-make install-init
-make install-config
-make install-commandmode
-make install-webconf
-htpasswd -c /usr/local/nagios/etc/htpasswd.users nagiosadmin
-service httpd restart
-cd ~/downloads
-tar zxvf nagios-plugins-2.0.3.tar.gz
-cd nagios-plugins-2.0.3
-./configure --with-nagios-user=nagios --with-nagios-group=nagios
-make
-make install
-chkconfig --add nagios
-chkconfig nagios on
-/usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg
-service nagios start
-service httpd restart
-hostname nagiosmaster
 
-vi /usr/local/nagios/etc/nagios.cfg
-uncomment below line
+sudo apt update
+sudo apt install -y autoconf bc gawk dc build-essential gcc libc6 make wget unzip apache2 php libapache2-mod-php libgd-dev libmcrypt-dev make libssl-dev snmp libnet-snmp-perl gettext
+tar -xf nagios-4.4.6.tar.gz
+cd nagioscore-*/
+cd ~/
+wget https://github.com/NagiosEnterprises/nagioscore/archive/nagios-4.4.6.tar.gz
+cd nagioscore-*/
+tar -xf nagios-4.4.6.tar.gz
+cd nagioscore-*/
+sudo ./configure --with-httpd-conf=/etc/apache2/sites-enabled
+sudo make all
+sudo make install-groups-users
+sudo usermod -a -G nagios www-data
+sudo make install
+sudo make install-daemoninit
+sudo make install-commandmode
+sudo make install-config
+sudo make install-webconf
+sudo a2enmod rewrite cgi
+systemctl restart apache2
+sudo htpasswd -c /usr/local/nagios/etc/htpasswd.users nagiosadmin
+
+for svc in Apache ssh
+do
+ufw allow $svc
+done
+
+ufw enable
+ufw status numbered
+sudo apt install monitoring-plugins nagios-nrpe-plugin
+cd /usr/local/nagios/etc
+mkdir -p /usr/local/nagios/etc/servers
+
+vi nagios.cfg
+Uncomment the 'cfg_dir' option that will be used for sotring all server hots configurations.
 cfg_dir=/usr/local/nagios/etc/servers
 
-cd /usr/local/nagios/etc/
+vi resource.cfg
+Define the Nagios Monitoring Plugins path by changing the default configuration as below.
+$USER1$=/usr/lib/nagios/plugins
 
-mkdir servers
-vi /usr/local/nagios/etc/servers/host1.cfg
+vi objects/commands.cfg
+$USER1$=/usr/lib/nagios/plugins
+
+define command{
+        command_name check_nrpe
+        command_line $USER1$/check_nrpe -H $HOSTADDRESS$ -c $ARG1$
+}
+
+systemctl start nagios
+systemctl enable nagios
+systemctl status nagios
+systemctl restart apache2
+
+http://18.220.113.208/nagios/
+
+Adding another host : Master side:
+
+cd /usr/local/nagios/etc
+vi servers/client01.cfg
 
 define host {
-use                          linux-server
-host_name                    slave
-alias                        Ubuntu Host
-address                      slavePrivateIP
-register                     1
+        use                          linux-server
+        host_name                    client01
+        alias                        Ubuntu Host
+        address                      172.31.13.86
+        register                     1
 }
 
 define service {
-host_name                       slave
-service_description             PING
-check_command                   check_ping!100.0,20%!500.0,60%
-max_check_attempts              2
-check_interval                  2
-retry_interval                  2
-check_period                    24x7
+      host_name                       client01
+      service_description             PING
+      check_command                   check_nrpe!check_ping
+      max_check_attempts              2
+      check_interval                  2
+      retry_interval                  2
+      check_period                    24x7
+      check_freshness                 1
+      contact_groups                  admins
+      notification_interval           2
+      notification_period             24x7
+      notifications_enabled           1
+      register                        1
 }
 
 define service {
-host_name                       slave
-service_description             PING
-check_command                   check_ping!100.0,20%!500.0,60%
-max_check_attempts              2
-check_interval                  2
-retry_interval                  2
-check_period                    24x7
-check_freshness                 1
-contact_groups                  admins
-notification_interval           2
-notification_period             24x7
-notifications_enabled           1
-register                        1
+      host_name                       client01
+      service_description             Check Users
+      check_command                   check_nrpe!check_users
+      max_check_attempts              2
+      check_interval                  2
+      retry_interval                  2
+      check_period                    24x7
+      check_freshness                 1
+      contact_groups                  admins
+      notification_interval           2
+      notification_period             24x7
+      notifications_enabled           1
+      register                        1
 }
 
 define service {
-host_name                       slave
-service_description             Check Users
-check_command           check_local_users!20!50
-max_check_attempts              2
-check_interval                  2
-retry_interval                  2
-check_period                    24x7
-check_freshness                 1
-contact_groups                  admins
-notification_interval           2
-notification_period             24x7
-notifications_enabled           1
-register                        1
+      host_name                       client01
+      service_description             Check SSH
+      check_command                   check_nrpe!check_ssh
+      max_check_attempts              2
+      check_interval                  2
+      retry_interval                  2
+      check_period                    24x7
+      check_freshness                 1
+      contact_groups                  admins
+      notification_interval           2
+      notification_period             24x7
+      notifications_enabled           1
+      register                        1
 }
 
 define service {
-host_name                       slave
-service_description             Local Disk
-check_command                   check_local_disk!20%!10%!/
-max_check_attempts              2
-check_interval                  2
-retry_interval                  2
-check_period                    24x7
-check_freshness                 1
-contact_groups                  admins
-notification_interval           2
-notification_period             24x7
-notifications_enabled           1
-register                        1
+      host_name                       client01
+      service_description             Check Root / Disk
+      check_command                   check_nrpe!check_root
+      max_check_attempts              2
+      check_interval                  2
+      retry_interval                  2
+      check_period                    24x7
+      check_freshness                 1
+      contact_groups                  admins
+      notification_interval           2
+      notification_period             24x7
+      notifications_enabled           1
+      register                        1
 }
 
 define service {
-host_name                       slave
-service_description             Check SSH
-check_command                   check_ssh
-max_check_attempts              2
-check_interval                  2
-retry_interval                  2
-check_period                    24x7
-check_freshness                 1
-contact_groups                  admins
-notification_interval           2
-notification_period             24x7
-notifications_enabled           1
-register                        1
+      host_name                       client01
+      service_description             Check APT Update
+      check_command                   check_nrpe!check_apt
+      max_check_attempts              2
+      check_interval                  2
+      retry_interval                  2
+      check_period                    24x7
+      check_freshness                 1
+      contact_groups                  admins
+      notification_interval           2
+      notification_period             24x7
+      notifications_enabled           1
+      register                        1
 }
 
+define service {
+      host_name                       client01
+      service_description             Check HTTP
+      check_command                   check_nrpe!check_http
+      max_check_attempts              2
+      check_interval                  2
+      retry_interval                  2
+      check_period                    24x7
+      check_freshness                 1
+      contact_groups                  admins
+      notification_interval           2
+      notification_period             24x7
+      notifications_enabled           1
+      register                        1
+}
 
-systemctl reload nagios.service
-
-
+systemctl restart nagios
 
 Agent side:   Add Linux Host to Monitor:
-sudo amazon-linux-extras install epel -y
-yum install nrpe nagios-plugins-all -y
-vi /etc/nagios/nrpe.cfg
-Find the line allowed_hosts and add the IP address of your Nagios server, In my case Nagios server address is     192.168.130.138
+sudo apt update
+sudo apt install nagios-nrpe-server monitoring-plugins
+cd /etc/nagios/
+vi nrpe_local.cfg
+command[check_root]=/usr/lib/nagios/plugins/check_disk -w 20% -c 10% -p /
+command[check_ping]=/usr/lib/nagios/plugins/check_ping -H agentip -w 100.0,20% -c 500.0,60% -p 5
+command[check_ssh]=/usr/lib/nagios/plugins/check_ssh -4 agentip
+command[check_http]=/usr/lib/nagios/plugins/check_http -I agentip
+command[check_apt]=/usr/lib/nagios/plugins/check_apt
 
-allowed_hosts=127.0.0.1,::1,192.168.130.138
+vi nrpe.cfg
+Uncomment the "server_address" line and change the value with the "client01" IP address.
+server_address=agentip
+One the "allowed_hosts" line, add the Nagios Server IP address "172.16.0.5".
+allowed_hosts=127.0.0.1,::1,MasterIP
 
+systemctl restart nagios-nrpe-server
+systemctl enable nagios-nrpe-server
+systemctl status nagios-nrpe-server
 
-systemctl start nrpe.service
-systemctl enable nrpe.service
-hostname slave
+sudo apt install monitoring-plugins nagios-nrpe-plugin
+hostname client01
+change hostname in /etc/hostname
