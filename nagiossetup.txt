@@ -38,14 +38,6 @@ vi resource.cfg
 Define the Nagios Monitoring Plugins path by changing the default configuration as below.
 $USER1$=/usr/lib/nagios/plugins
 
-vi objects/commands.cfg
-$USER1$=/usr/lib/nagios/plugins
-
-define command{
-        command_name check_nrpe
-        command_line $USER1$/check_nrpe -H $HOSTADDRESS$ -c $ARG1$
-}
-
 systemctl start nagios
 systemctl enable nagios
 systemctl status nagios
