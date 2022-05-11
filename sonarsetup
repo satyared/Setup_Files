@@ -72,3 +72,6 @@ WantedBy=multi-user.target
 sudo systemctl start sonar
 sudo systemctl enable sonar
 sudo systemctl status 
+
+Port : 9000
+Login to SonarQube  with default administrator username and password is admin.
