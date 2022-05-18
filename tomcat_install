@@ -1,7 +1,11 @@
 If it is normal user: 
 
+sudo yum install java-1.8.0-openjdk -y 
+
 sudo yum install tomcat tomcat-webapps tomcat-admin-webapps tomcat-docs-webapp tomcat-javadoc -y
 
 If it is root : 
+
+yum install java-1.8.0-openjdk -y 
 
 yum install tomcat tomcat-webapps tomcat-admin-webapps tomcat-docs-webapp tomcat-javadoc -y
