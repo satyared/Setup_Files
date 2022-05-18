@@ -1,0 +1,91 @@
+Ansible Master and Agent setup
+Deploy 2 instances in AWS. Name as master and Agent:
+
+Connect to Master:
+Make as root
+$ sudo su
+$ ssh-keygen -t rsa
+
+Add ansible user:
+useradd ansible
+passwd ansible
+
+Install ansible
+sudo yum install epel-release  
+sudo yum install -y ansible 
+
+Edit  /etc/ansible/ansible.cfg file like below
+
+
+Edit /etc/ansible/host file like below with servers IP’s
+
+Edit sshd_config file:
+Edit 61 th line   PasswordAuthentication no to  PasswordAuthentication yes 
+In /etc/ssh/sshd_config file like above
+
+$ sudo systemctl restart sshd
+
+Edit visudo file with Ansible user info
+Edit visudo file in 101 line with below test
+
+
+Make hostname change permanently:
+Edit /etc/hostname file like below:
+
+$ reboot
+
+Copy ID’s from Master to slave & Master to Master :
+Make as ansible user:  
+$ su ansible
+$ ssh-keygen -t rsa
+
+$ ssh-copy-id ansible@slaveip
+$ ssh-copy-id ansible@masterip
+
+
+
+
+Agent:
+
+
+Edit sshd_config file:
+Make as root:
+$sudo su
+$ ssh-keygen -t rsa
+
+Edit 61 th line   PasswordAuthentication no to  PasswordAuthentication yes 
+In /etc/ssh/sshd_config file like above
+
+$ sudo systemctl restart sshd
+
+Edit visduo file with Ansible user info
+Edit visudo file in 101 line with below test
+
+
+Edit /etc/hostname file like below:
+
+ $ reboot
+Add ansible user:
+$ useradd ansible
+$ passwd ansible
+$ su ansible
+$ ssh-keygen -t rsa
+
+Ansible ad-hoc Commands
+Ping:
+$ansible all -m ping
+File Transfer
+$ansible servers -m copy -a "src=abc.txt dest=/home/ansible/abc.txt“
+Installing Package:
+$ansible servers -b -m yum -a "name=tree state=present"
+Uninstalling Package:
+$ansible servers -b -m yum -a "name=httpd state=absent“
+Creating user:
+$ansible all -b -m user -a "name=raju password=12345678“
+Deleting user:
+$ansible servers -b -m user -a "name=test state=absent" 
+Managing services:
+$ansible  servers  -m service -a "name=httpd state=started"  
+Getting Facts: 
+$ansible all -m setup
+
