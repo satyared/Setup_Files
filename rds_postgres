@@ -1,0 +1,16 @@
+
+sudo tee /etc/yum.repos.d/pgdg.repo<<EOF
+[pgdg13]
+name=PostgreSQL 13 for RHEL/CentOS 7 - x86_64
+baseurl=https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-7-x86_64
+enabled=1
+gpgcheck=0
+EOF
+
+sudo yum update
+sudo yum install postgresql13 postgresql13-server
+sudo /usr/pgsql-13/bin/postgresql-13-setup initdb
+sudo systemctl start postgresql-13
+sudo systemctl enable postgresql-13
+
+psql --host=database-1.cr2javkhl4rw.us-east-1.rds.amazonaws.com --port=5432 --username=postgres --dbname=postgres
