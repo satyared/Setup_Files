@@ -85,6 +85,8 @@ aws ec2 start-instances --instance-ids i-0d9d077670263bf6a
 aws ec2 stop-instances --instance-ids i-0d9d077670263bf6a
 aws ec2 terminate-instances --instance-ids i-0d9d077670263bf6a
 
+aws ec2 describe-instances --query 'Reservations[*].Instances[*].{Instance:InstanceId,PublicIP:PublicIpAddress}' --output table
+
 12:how to find out instance id
 
  aws ec2 describe-instances --instance-ids i-0aeda77a7aa41091f
