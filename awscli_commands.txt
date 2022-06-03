@@ -79,6 +79,9 @@ aws ec2 describe-images --owners self amazon --filters "Name=root-device-type,Va
 
 aws ec2 run-instances --image-id ami-04505e74c0741db8d --count 1 --instance-type t2.micro --key-name terraform --security-group-ids sg-0f3b68f97f91509d1 --subnet-id subnet-0ac4be71aa723b6f6
 
+aws ec2 run-instances --image-id ami-079b5e5b3971bd10d --count 2 --instance-type t2.micro --key-name clitest --security-group-ids sg-00244a2b24cc2a89c --subnet-id subnet-00e9d97d372e1cd0b --tag-specifications 'ResourceType=instance,Tags=[{Key=webserver,Value=production}]'
+
+
 11:terminate the instalnce 
 
 aws ec2 start-instances --instance-ids i-0d9d077670263bf6a
