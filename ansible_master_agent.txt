@@ -12,6 +12,9 @@ passwd ansible
 
 Install ansible
 sudo yum install epel-release  
+or
+sudo amazon-linux-extras install epel
+
 sudo yum install -y ansible 
 
 Edit  /etc/ansible/ansible.cfg file like below
