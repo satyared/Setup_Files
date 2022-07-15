@@ -20,7 +20,7 @@ function wait_for_jenkins ()
     echo "Jenkins launched"
 }
 
-function slave_setup()
+#function slave_setup()
 {
     # Wait till jar file gets available
     ret=1
