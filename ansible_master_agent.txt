@@ -84,6 +84,11 @@ Ping:
 $ansible all -m ping
 File Transfer
 $ansible servers -m copy -a "src=abc.txt dest=/home/ansible/abc.txt“
+or
+ansible all -m copy -a "src=abc.txt dest=/tmp/abc.txt"
+
+
+
 Installing Package:
 $ansible servers -b -m yum -a "name=tree state=present"
 Uninstalling Package:
