@@ -17,10 +17,13 @@ sudo amazon-linux-extras install epel
 
 sudo yum install -y ansible 
 
+
 Edit  /etc/ansible/ansible.cfg file like below
-
-
+uncommet inventory      = /etc/ansible/hosts
+sudo_user      = ansible ( default root user is there add ansible user uncomment )
 Edit /etc/ansible/host file like below with servers IP’s
+add [groupname or agent for example i am given agnet]
+add agent ip address ( for example IP adress ansible_user=ansible)
 
 Edit sshd_config file:
 Edit 61 th line   PasswordAuthentication no to  PasswordAuthentication yes 
