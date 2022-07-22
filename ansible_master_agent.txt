@@ -91,6 +91,8 @@ ansible all -m copy -a "src=abc.txt dest=/tmp/abc.txt"
 
 Installing Package:
 $ansible servers -b -m yum -a "name=tree state=present"
+or
+ansible all -b -m yum -a "name=docker state=present"
 Uninstalling Package:
 $ansible servers -b -m yum -a "name=httpd state=absent“
 Creating user:
