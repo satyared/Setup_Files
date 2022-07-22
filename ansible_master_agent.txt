@@ -1,6 +1,8 @@
 Ansible Master and Agent setup
 Deploy 2 instances in AWS. Name as master and Agent:
 
+please chnage hostname one node is master and another slave 
+
 Connect to Master:
 Make as root
 $ sudo su
